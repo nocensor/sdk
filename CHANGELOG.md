@@ -3,6 +3,12 @@
 All notable changes to `@nocensor/sdk` are documented in this file.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## [0.3.0] — 2026-04-25
+
+### Added
+
+- `CONTRIBUTING.md` on the public GitHub mirror explaining the read-only mirror model and how to file issues
+
 ## [0.2.0] — 2026-04-25
 
 ### Added

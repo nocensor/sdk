@@ -26,7 +26,7 @@ import { CreditsResource } from './resources/credits'
 import { PaymentsResource } from './resources/payments'
 
 // Update this on every release to match package.json version.
-const SDK_VERSION = '0.2.0'
+const SDK_VERSION = '0.3.0'
 
 export interface NoCensorOptions {
   apiKey?: string

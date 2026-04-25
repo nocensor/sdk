@@ -1,6 +1,6 @@
 {
   "name": "@nocensor/sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Official TypeScript SDK for the nocensor.ai API — image and video generation, face-swap, pipelines, webhooks.",
   "license": "MIT",
   "repository": {
