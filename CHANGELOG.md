@@ -3,6 +3,13 @@
 All notable changes to `@nocensor/sdk` are documented in this file.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## [0.3.1] — 2026-04-25
+
+### Changed
+
+- README: updated description to include "uncensored AI" and NSFW content context for better discoverability
+- `package.json` keywords: added `nsfw`, `uncensored`, `adult`, `text-to-image`, `stable-diffusion`, `pipelines`, `webhooks`
+
 ## [0.3.0] — 2026-04-25
 
 ### Added

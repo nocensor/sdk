@@ -1,6 +1,6 @@
 # @nocensor/sdk
 
-Official TypeScript SDK for the [nocensor.ai](https://nocensor.ai) API — image and video generation, face swap, pipelines, and webhooks.
+Official TypeScript SDK for the [nocensor.ai](https://nocensor.ai) API — uncensored AI image and video generation, face swap, pipelines, and webhooks. Built for platforms that need NSFW and adult content generation without restrictions.
 
 - **Universal runtime** — Node 20+, browsers, Deno, Bun, Cloudflare Workers, Vercel Edge
 - **Zero runtime dependencies** — everything built on Web standards

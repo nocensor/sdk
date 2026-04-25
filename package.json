@@ -1,6 +1,6 @@
 {
   "name": "@nocensor/sdk",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Official TypeScript SDK for the nocensor.ai API — image and video generation, face-swap, pipelines, webhooks.",
   "license": "MIT",
   "repository": {
@@ -76,9 +76,16 @@
   "keywords": [
     "nocensor",
     "ai",
+    "nsfw",
+    "uncensored",
+    "adult",
     "image-generation",
     "video-generation",
+    "text-to-image",
+    "stable-diffusion",
     "face-swap",
+    "pipelines",
+    "webhooks",
     "sdk",
     "api-client",
     "typescript"
