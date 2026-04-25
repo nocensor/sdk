@@ -1,0 +1,82 @@
+{
+  "name": "@nocensor/sdk",
+  "version": "0.1.0",
+  "description": "Official TypeScript SDK for the nocensor.ai API — image and video generation, face-swap, pipelines, webhooks.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nocensor-ai/nocensor.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://nocensor.ai/developers",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "node": "./dist/node.js",
+      "browser": false
+    },
+    "./webhooks": {
+      "types": "./dist/webhooks/index.d.ts",
+      "import": "./dist/webhooks/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run __tests__/integration",
+    "lint": "eslint src",
+    "generate": "node scripts/generate-types.mjs",
+    "generate:check": "node scripts/check-types-drift.mjs",
+    "clean": "rimraf dist",
+    "prepublishOnly": "pnpm run generate:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
+  },
+  "dependencies": {
+    "@nocensor/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.1",
+    "@typescript-eslint/parser": "^8.58.1",
+    "eslint": "^9.0.0",
+    "openapi-typescript": "7.4.3",
+    "rimraf": "^6.0.0",
+    "tsup": "^8.3.0",
+    "type-fest": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "^3.2.4"
+  },
+  "keywords": [
+    "nocensor",
+    "ai",
+    "image-generation",
+    "video-generation",
+    "face-swap",
+    "sdk",
+    "api-client",
+    "typescript"
+  ]
+}

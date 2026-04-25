@@ -1,0 +1,27 @@
+// packages/sdk/src/errors.ts
+// Re-export error hierarchy from @nocensor/core — SSoT lives there now.
+export {
+  NoCensorError,
+  type ErrorInit,
+  NoCensorAuthenticationError,
+  NoCensorPermissionError,
+  NoCensorValidationError,
+  NoCensorNotFoundError,
+  NoCensorConflictError,
+  NoCensorInsufficientCreditsError,
+  NoCensorPurchaseRequiredError,
+  NoCensorPromptBlockedError,
+  NoCensorServerError,
+  NoCensorNetworkError,
+  NoCensorTimeoutError,
+  NoCensorRateLimitError,
+  NoCensorJobFailedError,
+  NoCensorWebhookError,
+  NoCensorJobNotCancellableError,
+  NoCensorLoraNotReadyError,
+  NoCensorWebhookLimitReachedError,
+  NoCensorWebhookInactiveError,
+  type RateLimitInfo,
+  type WebhookErrorReason,
+  mapErrorCodeToClass,
+} from '@nocensor/core'

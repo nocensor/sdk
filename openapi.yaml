@@ -1,0 +1,1670 @@
+openapi: 3.1.0
+info:
+  title: nocensor.ai API
+  version: '1'
+  description: REST API for AI image and video generation, enhancement, pipelines,
+    and webhooks.
+servers:
+  - url: https://nocensor.ai
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'API key issued from the developers dashboard. Send as
+        `Authorization: Bearer <key>`.'
+  schemas:
+    CreateWebhookRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum: &a1
+              - job.completed
+              - job.failed
+              - job.cancelled
+              - payment.completed
+              - lora.training_completed
+              - lora.training_failed
+              - pipeline.completed
+              - webhook.test
+          minItems: 1
+          maxItems: 8
+      required:
+        - url
+        - events
+    UpdateWebhookRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum: *a1
+          minItems: 1
+          maxItems: 8
+        is_active:
+          type: boolean
+    EnhanceRequest:
+      oneOf:
+        - type: object
+          properties:
+            operation:
+              type: string
+              enum:
+                - upscale
+            source:
+              type: string
+            scale:
+              type: integer
+              minimum: 2
+              maximum: 4
+              default: 2
+          required:
+            - operation
+            - source
+        - type: object
+          properties:
+            operation:
+              type: string
+              enum:
+                - face-restore
+            source:
+              type: string
+          required:
+            - operation
+            - source
+        - type: object
+          properties:
+            operation:
+              type: string
+              enum:
+                - bg-replace
+            source:
+              type: string
+            background_prompt:
+              type: string
+              minLength: 1
+              maxLength: 2000
+          required:
+            - operation
+            - source
+            - background_prompt
+        - type: object
+          properties:
+            operation:
+              type: string
+              enum:
+                - attach-object
+            source:
+              type: string
+            object_prompt:
+              type: string
+              minLength: 1
+              maxLength: 2000
+            mask:
+              type: string
+          required:
+            - operation
+            - source
+            - object_prompt
+            - mask
+    UndressRequest:
+      type: object
+      properties:
+        source:
+          type: string
+        biometric_consent:
+          type: boolean
+          enum:
+            - true
+      required:
+        - source
+        - biometric_consent
+    PipelineRequest:
+      type: object
+      properties:
+        stages:
+          type: array
+          items:
+            oneOf:
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - generate
+                  prompt:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  negative_prompt:
+                    type: string
+                    maxLength: 2000
+                  model:
+                    type: string
+                  loras:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        strength:
+                          type: number
+                          minimum: 0
+                          maximum: 2
+                      required:
+                        - id
+                        - strength
+                    maxItems: 2
+                  width:
+                    type: integer
+                  height:
+                    type: integer
+                  seed:
+                    type: integer
+                required:
+                  - op
+                  - prompt
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - undress
+                  biometric_consent:
+                    type: boolean
+                    enum:
+                      - true
+                required:
+                  - op
+                  - biometric_consent
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - face-swap
+                  biometric_consent:
+                    type: boolean
+                    enum:
+                      - true
+                  face_model_id:
+                    type: string
+                    format: uuid
+                  face:
+                    type: string
+                required:
+                  - op
+                  - biometric_consent
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - upscale
+                  scale:
+                    type: integer
+                    minimum: 2
+                    maximum: 4
+                    default: 2
+                required:
+                  - op
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - face-restore
+                required:
+                  - op
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - bg-replace
+                  background_prompt:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                required:
+                  - op
+                  - background_prompt
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - attach-object
+                  object_prompt:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  mask:
+                    type: string
+                required:
+                  - op
+                  - object_prompt
+                  - mask
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - animate
+                  motion_prompt:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  frames:
+                    type: integer
+                required:
+                  - op
+                  - motion_prompt
+              - type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - redress
+                  biometric_consent:
+                    type: boolean
+                    enum:
+                      - true
+                  clothing_prompt:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                required:
+                  - op
+                  - biometric_consent
+                  - clothing_prompt
+          minItems: 1
+          maxItems: 5
+        source:
+          type: string
+        webhook_event_id_prefix:
+          type: string
+          maxLength: 64
+      required:
+        - stages
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+        version:
+          type: string
+      required:
+        - status
+    Meta:
+      type: object
+      properties:
+        request_id:
+          type: string
+      required:
+        - request_id
+      additionalProperties: {}
+    HealthResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Health'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    Account:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        email:
+          type:
+            - string
+            - 'null'
+          format: email
+        credits_remaining:
+          type: integer
+      required:
+        - user_id
+        - email
+        - credits_remaining
+    AccountResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Account'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    ErrorObject:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        status:
+          type: integer
+        request_id:
+          type: string
+      required:
+        - code
+        - message
+        - status
+        - request_id
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+      required:
+        - error
+    Credits:
+      type: object
+      properties:
+        credits_remaining:
+          type: integer
+      required:
+        - credits_remaining
+    CreditsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Credits'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    JobAccepted:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - status
+        - created_at
+    JobAcceptedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/JobAccepted'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    GenerateRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        negativePrompt:
+          type: string
+          maxLength: 2000
+        model:
+          type: string
+          enum:
+            - realistic
+            - photoreal-plus
+            - anime
+            - hentai
+            - stylized
+            - chroma
+          default: realistic
+        seed:
+          type: integer
+          minimum: 0
+        image:
+          type: string
+        denoise:
+          type: number
+          minimum: 0.1
+          maximum: 1
+        loras:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              strength:
+                type: number
+                minimum: 0
+                maximum: 2
+            required:
+              - id
+          maxItems: 2
+      required:
+        - prompt
+    VideoRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        negativePrompt:
+          type: string
+          maxLength: 2000
+        image:
+          type: string
+        duration:
+          type: string
+          enum:
+            - short
+            - medium
+            - long
+            - long-plus
+        seed:
+          type: integer
+          minimum: 0
+      required:
+        - prompt
+    FaceSwapRequest:
+      type: object
+      properties:
+        source:
+          type: string
+        face_model_id:
+          type: string
+          format: uuid
+        face:
+          type: string
+        biometric_consent:
+          type: boolean
+          enum:
+            - true
+      required:
+        - source
+        - biometric_consent
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        workflow_id:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - completed
+            - failed
+            - cancelled
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        error_message:
+          type:
+            - string
+            - 'null'
+        credits_charged:
+          type:
+            - integer
+            - 'null'
+        output_url:
+          type:
+            - string
+            - 'null'
+          format: uri
+      required:
+        - id
+        - workflow_id
+        - status
+        - created_at
+    PipelineResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Job'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    JobListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    JobResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Job'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    ModelListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+            required:
+              - id
+              - name
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    PaymentListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              amount_usd:
+                type: number
+              gateway:
+                type: string
+              status:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+            required:
+              - id
+              - amount_usd
+              - gateway
+              - status
+              - created_at
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - url
+        - events
+        - is_active
+        - created_at
+    WebhookListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Webhook'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    WebhookResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Webhook'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    WebhookUpdatedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Webhook'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    WebhookDeliveryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              event_type:
+                type: string
+              status:
+                type: string
+              attempts:
+                type: integer
+              created_at:
+                type: string
+                format: date-time
+            required:
+              - id
+              - event_type
+              - status
+              - attempts
+              - created_at
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+    WebhookTestResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            delivered:
+              type: boolean
+          required:
+            - delivered
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - data
+        - meta
+  parameters: {}
+paths:
+  /api/v1/health:
+    get:
+      tags:
+        - system
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/v1/account:
+    get:
+      tags:
+        - account
+      summary: Get current account
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Account details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/credits:
+    get:
+      tags:
+        - account
+      summary: Get remaining credits
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Credit balance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditsResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/generate:
+    post:
+      tags:
+        - generation
+      summary: Generate an image
+      description: Submit a prompt (and optional source image for img2img) to generate
+        an SDXL image.
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRequest'
+      responses:
+        '202':
+          description: Job accepted and queued for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAcceptedResponse'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '402':
+          description: Insufficient credits.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Payload too large.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: GPU capacity unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/video:
+    post:
+      tags:
+        - generation
+      summary: Generate a video (txt2video or img2video)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoRequest'
+      responses:
+        '202':
+          description: Job accepted and queued for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAcceptedResponse'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '402':
+          description: Insufficient credits.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: GPU capacity unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/undress:
+    post:
+      tags:
+        - generation
+      summary: Undress an image (requires biometric consent)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                biometric_consent:
+                  type: boolean
+                  enum:
+                    - true
+              required:
+                - source
+                - biometric_consent
+      responses:
+        '202':
+          description: Job accepted and queued for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAcceptedResponse'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '402':
+          description: Insufficient credits.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/face-swap:
+    post:
+      tags:
+        - generation
+      summary: Face-swap an image (requires biometric consent)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FaceSwapRequest'
+      responses:
+        '202':
+          description: Job accepted and queued for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAcceptedResponse'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '402':
+          description: Insufficient credits.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/enhance:
+    post:
+      tags:
+        - generation
+      summary: Enhance an image
+      description: Run a single enhancement op (upscale, face-restore, bg-replace,
+        attach-object).
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  properties:
+                    operation:
+                      type: string
+                      enum:
+                        - upscale
+                    source:
+                      type: string
+                    scale:
+                      type: integer
+                      minimum: 2
+                      maximum: 4
+                      default: 2
+                  required:
+                    - operation
+                    - source
+                - type: object
+                  properties:
+                    operation:
+                      type: string
+                      enum:
+                        - face-restore
+                    source:
+                      type: string
+                  required:
+                    - operation
+                    - source
+                - type: object
+                  properties:
+                    operation:
+                      type: string
+                      enum:
+                        - bg-replace
+                    source:
+                      type: string
+                    background_prompt:
+                      type: string
+                      minLength: 1
+                      maxLength: 2000
+                  required:
+                    - operation
+                    - source
+                    - background_prompt
+                - type: object
+                  properties:
+                    operation:
+                      type: string
+                      enum:
+                        - attach-object
+                    source:
+                      type: string
+                    object_prompt:
+                      type: string
+                      minLength: 1
+                      maxLength: 2000
+                    mask:
+                      type: string
+                  required:
+                    - operation
+                    - source
+                    - object_prompt
+                    - mask
+      responses:
+        '202':
+          description: Job accepted and queued for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAcceptedResponse'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '402':
+          description: Insufficient credits.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/pipelines:
+    post:
+      tags:
+        - pipelines
+      summary: Run a multi-stage pipeline
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stages:
+                  type: array
+                  items:
+                    oneOf:
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - generate
+                          prompt:
+                            type: string
+                            minLength: 1
+                            maxLength: 2000
+                          negative_prompt:
+                            type: string
+                            maxLength: 2000
+                          model:
+                            type: string
+                          loras:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                strength:
+                                  type: number
+                                  minimum: 0
+                                  maximum: 2
+                              required:
+                                - id
+                                - strength
+                            maxItems: 2
+                          width:
+                            type: integer
+                          height:
+                            type: integer
+                          seed:
+                            type: integer
+                        required:
+                          - op
+                          - prompt
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - undress
+                          biometric_consent:
+                            type: boolean
+                            enum:
+                              - true
+                        required:
+                          - op
+                          - biometric_consent
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - face-swap
+                          biometric_consent:
+                            type: boolean
+                            enum:
+                              - true
+                          face_model_id:
+                            type: string
+                            format: uuid
+                          face:
+                            type: string
+                        required:
+                          - op
+                          - biometric_consent
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - upscale
+                          scale:
+                            type: integer
+                            minimum: 2
+                            maximum: 4
+                            default: 2
+                        required:
+                          - op
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - face-restore
+                        required:
+                          - op
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - bg-replace
+                          background_prompt:
+                            type: string
+                            minLength: 1
+                            maxLength: 2000
+                        required:
+                          - op
+                          - background_prompt
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - attach-object
+                          object_prompt:
+                            type: string
+                            minLength: 1
+                            maxLength: 2000
+                          mask:
+                            type: string
+                        required:
+                          - op
+                          - object_prompt
+                          - mask
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - animate
+                          motion_prompt:
+                            type: string
+                            minLength: 1
+                            maxLength: 2000
+                          frames:
+                            type: integer
+                        required:
+                          - op
+                          - motion_prompt
+                      - type: object
+                        properties:
+                          op:
+                            type: string
+                            enum:
+                              - redress
+                          biometric_consent:
+                            type: boolean
+                            enum:
+                              - true
+                          clothing_prompt:
+                            type: string
+                            minLength: 1
+                            maxLength: 2000
+                        required:
+                          - op
+                          - biometric_consent
+                          - clothing_prompt
+                  minItems: 1
+                  maxItems: 5
+                source:
+                  type: string
+                webhook_event_id_prefix:
+                  type: string
+                  maxLength: 64
+              required:
+                - stages
+      responses:
+        '202':
+          description: Job accepted and queued for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAcceptedResponse'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '402':
+          description: Insufficient credits.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/pipelines/{id}:
+    get:
+      tags:
+        - pipelines
+      summary: Get pipeline status
+      security:
+        - BearerAuth: []
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+      responses:
+        '200':
+          description: Pipeline record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/jobs:
+    get:
+      tags:
+        - jobs
+      summary: List recent jobs
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/jobs/{id}:
+    get:
+      tags:
+        - jobs
+      summary: Get a job by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - schema:
+            type: string
+          required: true
+          name: id
+          in: path
+      responses:
+        '200':
+          description: Job record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Job not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/models:
+    get:
+      tags:
+        - system
+      summary: List available models
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of models.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelListResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/payments:
+    get:
+      tags:
+        - account
+      summary: List recent payments
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Payment history.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentListResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/webhooks:
+    get:
+      tags:
+        - webhooks
+      summary: List webhooks
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Webhook list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookListResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - webhooks
+      summary: Create a webhook
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                    enum: *a1
+                  minItems: 1
+                  maxItems: 8
+              required:
+                - url
+                - events
+      responses:
+        '201':
+          description: Webhook created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/webhooks/{id}:
+    patch:
+      tags:
+        - webhooks
+      summary: Update a webhook
+      security:
+        - BearerAuth: []
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                    enum: *a1
+                  minItems: 1
+                  maxItems: 8
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Updated webhook.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookUpdatedResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Webhook not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - webhooks
+      summary: Delete a webhook
+      security:
+        - BearerAuth: []
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+      responses:
+        '204':
+          description: Webhook deleted.
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Webhook not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/webhooks/{id}/deliveries:
+    get:
+      tags:
+        - webhooks
+      summary: List webhook deliveries
+      security:
+        - BearerAuth: []
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+      responses:
+        '200':
+          description: Delivery history.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDeliveryListResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/webhooks/{id}/test:
+    post:
+      tags:
+        - webhooks
+      summary: Send a test event to a webhook
+      security:
+        - BearerAuth: []
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+      responses:
+        '202':
+          description: Test delivery queued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookTestResponse'
+        '401':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Webhook not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+webhooks: {}
