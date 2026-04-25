@@ -25,14 +25,16 @@ describe('VideoResource.create', () => {
     await nc(m).video.create({
       prompt: 'a fox running',
       negativePrompt: 'blurry',
-      durationSeconds: 5,
+      duration: 'long+',
+      resolution: 'hd',
       seed: 7,
     })
     const body = JSON.parse(m.calls[0]?.body ?? '{}')
     expect(body).toEqual({
       prompt: 'a fox running',
       negative_prompt: 'blurry',
-      duration_seconds: 5,
+      duration: 'long+',
+      resolution: 'hd',
       seed: 7,
     })
     expect(m.calls[0]?.url).toBe('https://nocensor.ai/api/v1/video')
@@ -56,10 +58,12 @@ describe('VideoResource.create', () => {
     await nc(m).video.create({
       prompt: 'camera pans left',
       image: 'https://example.com/src.png',
+      biometricConsent: true,
       loras: [{ id: 'lora-1', strength: 0.7 }],
     })
     const body = JSON.parse(m.calls[0]?.body ?? '{}')
     expect(body.image).toBe('https://example.com/src.png')
+    expect(body.biometric_consent).toBe(true)
     expect(body.loras).toEqual([{ id: 'lora-1', strength: 0.7 }])
   })
 

@@ -18,7 +18,12 @@ export interface VideoCreateParams {
   seed?: number
   /** Optional — present → image-to-video, absent → text-to-video. */
   image?: ImageInput
-  durationSeconds?: number
+  /** Duration preset. Defaults to `'short'` if omitted. */
+  duration?: 'short' | 'medium' | 'long' | 'long+'
+  /** Output resolution. Defaults to `'standard'` if omitted. */
+  resolution?: 'standard' | 'hd'
+  /** Required when `image` is provided (i2v mode). */
+  biometricConsent?: boolean
   loras?: VideoLoraRef[]
   idempotencyKey?: string
   signal?: AbortSignal
@@ -38,7 +43,9 @@ interface VideoRequestWire {
   model?: string
   seed?: number
   image?: string
-  duration_seconds?: number
+  duration?: 'short' | 'medium' | 'long' | 'long+'
+  resolution?: 'standard' | 'hd'
+  biometric_consent?: boolean
   loras?: VideoLoraRef[]
 }
 
@@ -48,7 +55,9 @@ async function toWireVideo(p: VideoCreateParams): Promise<VideoRequestWire> {
   if (p.model !== undefined) wire.model = p.model
   if (p.seed !== undefined) wire.seed = p.seed
   if (p.image !== undefined) wire.image = await toDataUri(p.image)
-  if (p.durationSeconds !== undefined) wire.duration_seconds = p.durationSeconds
+  if (p.duration !== undefined) wire.duration = p.duration
+  if (p.resolution !== undefined) wire.resolution = p.resolution
+  if (p.biometricConsent !== undefined) wire.biometric_consent = p.biometricConsent
   if (p.loras !== undefined) wire.loras = p.loras
   return wire
 }

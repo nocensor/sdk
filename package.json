@@ -1,11 +1,11 @@
 {
   "name": "@nocensor/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Official TypeScript SDK for the nocensor.ai API — image and video generation, face-swap, pipelines, webhooks.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nocensor-ai/nocensor.git",
+    "url": "https://github.com/nocensor/sdk",
     "directory": "packages/sdk"
   },
   "homepage": "https://nocensor.ai/developers",
@@ -30,7 +30,14 @@
   },
   "sideEffects": false,
   "files": [
+    ".gitignore",
     "dist",
+    "src",
+    "eslint.config.js",
+    "tsconfig.json",
+    "tsup.config.ts",
+    "vitest.config.ts",
+    "package.json",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"
@@ -53,9 +60,6 @@
     "generate:check": "node scripts/check-types-drift.mjs",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run generate:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
-  },
-  "dependencies": {
-    "@nocensor/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

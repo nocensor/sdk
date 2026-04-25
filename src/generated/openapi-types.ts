@@ -1948,1093 +1948,947 @@ export interface paths {
         trace?: never;
     };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    CreateWebhookRequest: {
-      /** Format: uri */
-      url: string
-      events: (
-        | 'job.completed'
-        | 'job.failed'
-        | 'job.cancelled'
-        | 'payment.completed'
-        | 'lora.training_completed'
-        | 'lora.training_failed'
-        | 'pipeline.completed'
-        | 'webhook.test'
-      )[]
-    }
-    UpdateWebhookRequest: {
-      /** Format: uri */
-      url?: string
-      events?: (
-        | 'job.completed'
-        | 'job.failed'
-        | 'job.cancelled'
-        | 'payment.completed'
-        | 'lora.training_completed'
-        | 'lora.training_failed'
-        | 'pipeline.completed'
-        | 'webhook.test'
-      )[]
-      is_active?: boolean
-    }
-    EnhanceRequest:
-      | {
-          /** @enum {string} */
-          operation: 'upscale'
-          source: string
-          /** @default 2 */
-          scale: number
-        }
-      | {
-          /** @enum {string} */
-          operation: 'face-restore'
-          source: string
-        }
-      | {
-          /** @enum {string} */
-          operation: 'bg-replace'
-          source: string
-          background_prompt: string
-        }
-      | {
-          /** @enum {string} */
-          operation: 'attach-object'
-          source: string
-          object_prompt: string
-          mask: string
-        }
-    UndressRequest: {
-      source: string
-      /** @enum {boolean} */
-      biometric_consent: true
-    }
-    PipelineRequest: {
-      stages:
-        | []
-        | [
-            | {
-                /** @enum {string} */
-                op: 'generate'
-                prompt: string
-                negative_prompt?: string
-                model?: string
-                loras?:
-                  | []
-                  | [
-                      {
-                        /** Format: uuid */
-                        id: string
-                        strength: number
-                      },
-                    ]
-                  | [
-                      {
-                        /** Format: uuid */
-                        id: string
-                        strength: number
-                      },
-                      {
-                        /** Format: uuid */
-                        id: string
-                        strength: number
-                      },
-                    ]
-                width?: number
-                height?: number
-                seed?: number
-              }
-            | {
-                /** @enum {string} */
-                op: 'undress'
-                /** @enum {boolean} */
-                biometric_consent: true
-              }
-            | {
-                /** @enum {string} */
-                op: 'face-swap'
-                /** @enum {boolean} */
-                biometric_consent: true
+    schemas: {
+        CreateWebhookRequest: {
+            /** Format: uri */
+            url: string;
+            events: ("job.completed" | "job.failed" | "job.cancelled" | "payment.completed" | "lora.training_completed" | "lora.training_failed" | "pipeline.completed" | "webhook.test")[];
+        };
+        UpdateWebhookRequest: {
+            /** Format: uri */
+            url?: string;
+            events?: ("job.completed" | "job.failed" | "job.cancelled" | "payment.completed" | "lora.training_completed" | "lora.training_failed" | "pipeline.completed" | "webhook.test")[];
+            is_active?: boolean;
+        };
+        EnhanceRequest: {
+            /** @enum {string} */
+            operation: "upscale";
+            source: string;
+            /** @default 2 */
+            scale: number;
+        } | {
+            /** @enum {string} */
+            operation: "face-restore";
+            source: string;
+        } | {
+            /** @enum {string} */
+            operation: "bg-replace";
+            source: string;
+            background_prompt: string;
+        } | {
+            /** @enum {string} */
+            operation: "attach-object";
+            source: string;
+            object_prompt: string;
+            mask: string;
+        };
+        UndressRequest: {
+            source: string;
+            /** @enum {boolean} */
+            biometric_consent: true;
+        };
+        PipelineRequest: {
+            stages: [
+            ] | [
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                }
+            ] | [
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                },
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                }
+            ] | [
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                },
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                },
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                }
+            ] | [
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                },
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                },
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                },
+                {
+                    /** @enum {string} */
+                    op: "generate";
+                    prompt: string;
+                    negative_prompt?: string;
+                    model?: string;
+                    loras?: [
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ] | [
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        },
+                        {
+                            /** Format: uuid */
+                            id: string;
+                            strength: number;
+                        }
+                    ];
+                    width?: number;
+                    height?: number;
+                    seed?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "undress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                } | {
+                    /** @enum {string} */
+                    op: "face-swap";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    /** Format: uuid */
+                    face_model_id?: string;
+                    face?: string;
+                } | {
+                    /** @enum {string} */
+                    op: "upscale";
+                    /** @default 2 */
+                    scale: number;
+                } | {
+                    /** @enum {string} */
+                    op: "face-restore";
+                } | {
+                    /** @enum {string} */
+                    op: "bg-replace";
+                    background_prompt: string;
+                } | {
+                    /** @enum {string} */
+                    op: "attach-object";
+                    object_prompt: string;
+                    mask: string;
+                } | {
+                    /** @enum {string} */
+                    op: "animate";
+                    motion_prompt: string;
+                    frames?: number;
+                } | {
+                    /** @enum {string} */
+                    op: "redress";
+                    /** @enum {boolean} */
+                    biometric_consent: true;
+                    clothing_prompt: string;
+                }
+            ];
+            source?: string;
+            webhook_event_id_prefix?: string;
+        };
+        Health: {
+            /** @enum {string} */
+            status: "ok";
+            version?: string;
+        };
+        Meta: {
+            request_id: string;
+        } & {
+            [key: string]: unknown;
+        };
+        HealthResponse: {
+            data: components["schemas"]["Health"];
+            meta: components["schemas"]["Meta"];
+        };
+        Account: {
+            /** Format: uuid */
+            user_id: string;
+            /** Format: email */
+            email: string | null;
+            credits_remaining: number;
+        };
+        AccountResponse: {
+            data: components["schemas"]["Account"];
+            meta: components["schemas"]["Meta"];
+        };
+        ErrorObject: {
+            code: string;
+            message: string;
+            status: number;
+            request_id: string;
+        };
+        ErrorResponse: {
+            error: components["schemas"]["ErrorObject"];
+        };
+        Credits: {
+            credits_remaining: number;
+        };
+        CreditsResponse: {
+            data: components["schemas"]["Credits"];
+            meta: components["schemas"]["Meta"];
+        };
+        JobAccepted: {
+            id: string;
+            /** @enum {string} */
+            status: "pending";
+            /** Format: date-time */
+            created_at: string;
+        };
+        JobAcceptedResponse: {
+            data: components["schemas"]["JobAccepted"];
+            meta: components["schemas"]["Meta"];
+        };
+        GenerateRequest: {
+            prompt: string;
+            negativePrompt?: string;
+            /**
+             * @default realistic
+             * @enum {string}
+             */
+            model: "realistic" | "photoreal-plus" | "anime" | "hentai" | "stylized" | "chroma";
+            seed?: number;
+            image?: string;
+            denoise?: number;
+            loras?: [
+            ] | [
+                {
+                    /** Format: uuid */
+                    id: string;
+                    strength?: number;
+                }
+            ] | [
+                {
+                    /** Format: uuid */
+                    id: string;
+                    strength?: number;
+                },
+                {
+                    /** Format: uuid */
+                    id: string;
+                    strength?: number;
+                }
+            ];
+        };
+        VideoRequest: {
+            prompt: string;
+            negativePrompt?: string;
+            image?: string;
+            /** @enum {string} */
+            duration?: "short" | "medium" | "long" | "long-plus";
+            seed?: number;
+        };
+        FaceSwapRequest: {
+            source: string;
+            /** Format: uuid */
+            face_model_id?: string;
+            face?: string;
+            /** @enum {boolean} */
+            biometric_consent: true;
+        };
+        Job: {
+            id: string;
+            workflow_id: string;
+            /** @enum {string} */
+            status: "pending" | "processing" | "completed" | "failed" | "cancelled";
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            completed_at?: string | null;
+            error_message?: string | null;
+            credits_charged?: number | null;
+            /** Format: uri */
+            output_url?: string | null;
+        };
+        PipelineResponse: {
+            data: components["schemas"]["Job"];
+            meta: components["schemas"]["Meta"];
+        };
+        JobListResponse: {
+            data: components["schemas"]["Job"][];
+            meta: components["schemas"]["Meta"];
+        };
+        JobResponse: {
+            data: components["schemas"]["Job"];
+            meta: components["schemas"]["Meta"];
+        };
+        ModelListResponse: {
+            data: {
+                id: string;
+                name: string;
+            }[];
+            meta: components["schemas"]["Meta"];
+        };
+        PaymentListResponse: {
+            data: {
                 /** Format: uuid */
-                face_model_id?: string
-                face?: string
-              }
-            | {
-                /** @enum {string} */
-                op: 'upscale'
-                /** @default 2 */
-                scale: number
-              }
-            | {
-                /** @enum {string} */
-                op: 'face-restore'
-              }
-            | {
-                /** @enum {string} */
-                op: 'bg-replace'
-                background_prompt: string
-              }
-            | {
-                /** @enum {string} */
-                op: 'attach-object'
-                object_prompt: string
-                mask: string
-              }
-            | {
-                /** @enum {string} */
-                op: 'animate'
-                motion_prompt: string
-                frames?: number
-              }
-            | {
-                /** @enum {string} */
-                op: 'redress'
-                /** @enum {boolean} */
-                biometric_consent: true
-                clothing_prompt: string
-              },
-          ]
-        | [
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-          ]
-        | [
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-          ]
-        | [
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-            (
-              | {
-                  /** @enum {string} */
-                  op: 'generate'
-                  prompt: string
-                  negative_prompt?: string
-                  model?: string
-                  loras?:
-                    | []
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                    | [
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                        {
-                          /** Format: uuid */
-                          id: string
-                          strength: number
-                        },
-                      ]
-                  width?: number
-                  height?: number
-                  seed?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'undress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-swap'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  /** Format: uuid */
-                  face_model_id?: string
-                  face?: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'upscale'
-                  /** @default 2 */
-                  scale: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'face-restore'
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'bg-replace'
-                  background_prompt: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'attach-object'
-                  object_prompt: string
-                  mask: string
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'animate'
-                  motion_prompt: string
-                  frames?: number
-                }
-              | {
-                  /** @enum {string} */
-                  op: 'redress'
-                  /** @enum {boolean} */
-                  biometric_consent: true
-                  clothing_prompt: string
-                }
-            ),
-          ]
-      source?: string
-      webhook_event_id_prefix?: string
-    }
-    Health: {
-      /** @enum {string} */
-      status: 'ok'
-      version?: string
-    }
-    Meta: {
-      request_id: string
-    } & {
-      [key: string]: unknown
-    }
-    HealthResponse: {
-      data: components['schemas']['Health']
-      meta: components['schemas']['Meta']
-    }
-    Account: {
-      /** Format: uuid */
-      user_id: string
-      /** Format: email */
-      email: string | null
-      credits_remaining: number
-    }
-    AccountResponse: {
-      data: components['schemas']['Account']
-      meta: components['schemas']['Meta']
-    }
-    ErrorObject: {
-      code: string
-      message: string
-      status: number
-      request_id: string
-    }
-    ErrorResponse: {
-      error: components['schemas']['ErrorObject']
-    }
-    Credits: {
-      credits_remaining: number
-    }
-    CreditsResponse: {
-      data: components['schemas']['Credits']
-      meta: components['schemas']['Meta']
-    }
-    JobAccepted: {
-      id: string
-      /** @enum {string} */
-      status: 'pending'
-      /** Format: date-time */
-      created_at: string
-    }
-    JobAcceptedResponse: {
-      data: components['schemas']['JobAccepted']
-      meta: components['schemas']['Meta']
-    }
-    GenerateRequest: {
-      prompt: string
-      negativePrompt?: string
-      /**
-       * @default realistic
-       * @enum {string}
-       */
-      model: 'realistic' | 'photoreal-plus' | 'anime' | 'hentai' | 'stylized' | 'chroma'
-      seed?: number
-      image?: string
-      denoise?: number
-      loras?:
-        | []
-        | [
-            {
-              /** Format: uuid */
-              id: string
-              strength?: number
-            },
-          ]
-        | [
-            {
-              /** Format: uuid */
-              id: string
-              strength?: number
-            },
-            {
-              /** Format: uuid */
-              id: string
-              strength?: number
-            },
-          ]
-    }
-    VideoRequest: {
-      prompt: string
-      negativePrompt?: string
-      image?: string
-      /** @enum {string} */
-      duration?: 'short' | 'medium' | 'long' | 'long-plus'
-      seed?: number
-    }
-    FaceSwapRequest: {
-      source: string
-      /** Format: uuid */
-      face_model_id?: string
-      face?: string
-      /** @enum {boolean} */
-      biometric_consent: true
-    }
-    Job: {
-      id: string
-      workflow_id: string
-      /** @enum {string} */
-      status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
-      /** Format: date-time */
-      created_at: string
-      /** Format: date-time */
-      completed_at?: string | null
-      error_message?: string | null
-      credits_charged?: number | null
-      /** Format: uri */
-      output_url?: string | null
-    }
-    PipelineResponse: {
-      data: components['schemas']['Job']
-      meta: components['schemas']['Meta']
-    }
-    JobListResponse: {
-      data: components['schemas']['Job'][]
-      meta: components['schemas']['Meta']
-    }
-    JobResponse: {
-      data: components['schemas']['Job']
-      meta: components['schemas']['Meta']
-    }
-    ModelListResponse: {
-      data: {
-        id: string
-        name: string
-      }[]
-      meta: components['schemas']['Meta']
-    }
-    PaymentListResponse: {
-      data: {
-        /** Format: uuid */
-        id: string
-        amount_usd: number
-        gateway: string
-        status: string
-        /** Format: date-time */
-        created_at: string
-      }[]
-      meta: components['schemas']['Meta']
-    }
-    Webhook: {
-      /** Format: uuid */
-      id: string
-      /** Format: uri */
-      url: string
-      events: string[]
-      is_active: boolean
-      /** Format: date-time */
-      created_at: string
-    }
-    WebhookListResponse: {
-      data: components['schemas']['Webhook'][]
-      meta: components['schemas']['Meta']
-    }
-    WebhookResponse: {
-      data: components['schemas']['Webhook']
-      meta: components['schemas']['Meta']
-    }
-    WebhookUpdatedResponse: {
-      data: components['schemas']['Webhook']
-      meta: components['schemas']['Meta']
-    }
-    WebhookDeliveryListResponse: {
-      data: {
-        /** Format: uuid */
-        id: string
-        event_type: string
-        status: string
-        attempts: number
-        /** Format: date-time */
-        created_at: string
-      }[]
-      meta: components['schemas']['Meta']
-    }
-    WebhookTestResponse: {
-      data: {
-        delivered: boolean
-      }
-      meta: components['schemas']['Meta']
-    }
-  }
-  responses: never
-  parameters: never
-  requestBodies: never
-  headers: never
-  pathItems: never
+                id: string;
+                amount_usd: number;
+                gateway: string;
+                status: string;
+                /** Format: date-time */
+                created_at: string;
+            }[];
+            meta: components["schemas"]["Meta"];
+        };
+        Webhook: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uri */
+            url: string;
+            events: string[];
+            is_active: boolean;
+            /** Format: date-time */
+            created_at: string;
+        };
+        WebhookListResponse: {
+            data: components["schemas"]["Webhook"][];
+            meta: components["schemas"]["Meta"];
+        };
+        WebhookResponse: {
+            data: components["schemas"]["Webhook"];
+            meta: components["schemas"]["Meta"];
+        };
+        WebhookUpdatedResponse: {
+            data: components["schemas"]["Webhook"];
+            meta: components["schemas"]["Meta"];
+        };
+        WebhookDeliveryListResponse: {
+            data: {
+                /** Format: uuid */
+                id: string;
+                event_type: string;
+                status: string;
+                attempts: number;
+                /** Format: date-time */
+                created_at: string;
+            }[];
+            meta: components["schemas"]["Meta"];
+        };
+        WebhookTestResponse: {
+            data: {
+                delivered: boolean;
+            };
+            meta: components["schemas"]["Meta"];
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type $defs = Record<string, never>
-export type operations = Record<string, never>
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;

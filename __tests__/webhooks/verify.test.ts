@@ -62,6 +62,20 @@ describe('verifyWebhook happy path', () => {
     }
   })
 
+  it('returns typed event for pipeline.completed', async () => {
+    const body = buildPayload({
+      type: 'pipeline.completed',
+      data: { pipelineId: 'p1', stages: [{ op: 'generate', jobId: 'j1', status: 'completed' }] },
+    })
+    const headers = await buildHeaders(body, SECRET, { eventType: 'pipeline.completed' })
+    const event = await verifyWebhook(body, headers, { secret: SECRET, now: () => NOW_MS })
+    expect(event.type).toBe('pipeline.completed')
+    expect('unknown' in event).toBe(false)
+    if (event.type === 'pipeline.completed') {
+      expect(event.data.pipelineId).toBe('p1')
+    }
+  })
+
   it('accepts Uint8Array body', async () => {
     const bodyStr = buildPayload()
     const body = new TextEncoder().encode(bodyStr)
@@ -183,16 +197,16 @@ describe('verifyWebhook secret rotation', () => {
 
 describe('verifyWebhook unknown event forward-compat', () => {
   it('returns event with unknown: true in non-strict mode', async () => {
-    const body = buildPayload({ type: 'pipeline.completed' })
-    const headers = await buildHeaders(body, SECRET, { eventType: 'pipeline.completed' })
+    const body = buildPayload({ type: 'future.event_type' })
+    const headers = await buildHeaders(body, SECRET, { eventType: 'future.event_type' })
     const event = await verifyWebhook(body, headers, { secret: SECRET, now: () => NOW_MS })
-    expect(event.type).toBe('pipeline.completed')
+    expect(event.type).toBe('future.event_type')
     expect('unknown' in event && event.unknown).toBe(true)
   })
 
   it('throws unknown_event in strict mode', async () => {
-    const body = buildPayload({ type: 'pipeline.completed' })
-    const headers = await buildHeaders(body, SECRET, { eventType: 'pipeline.completed' })
+    const body = buildPayload({ type: 'future.event_type' })
+    const headers = await buildHeaders(body, SECRET, { eventType: 'future.event_type' })
     try {
       await verifyWebhook(body, headers, { secret: SECRET, strictEvents: true, now: () => NOW_MS })
       throw new Error('should have thrown')

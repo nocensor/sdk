@@ -382,10 +382,16 @@ components:
     Credits:
       type: object
       properties:
-        credits_remaining:
+        balance:
+          type: integer
+        lifetime_purchased:
+          type: integer
+        lifetime_consumed:
           type: integer
       required:
-        - credits_remaining
+        - balance
+        - lifetime_purchased
+        - lifetime_consumed
     CreditsResponse:
       type: object
       properties:
@@ -466,6 +472,17 @@ components:
             required:
               - id
           maxItems: 2
+        width:
+          type: integer
+          minimum: 64
+          maximum: 1280
+        height:
+          type: integer
+          minimum: 64
+          maximum: 1280
+        characterId:
+          type: string
+          format: uuid
       required:
         - prompt
     VideoRequest:
@@ -478,6 +495,8 @@ components:
         negativePrompt:
           type: string
           maxLength: 2000
+        model:
+          type: string
         image:
           type: string
         duration:
@@ -486,10 +505,37 @@ components:
             - short
             - medium
             - long
-            - long-plus
+            - long+
+        resolution:
+          type: string
+          enum:
+            - standard
+            - hd
+        mode:
+          type: string
+          enum:
+            - t2v
+            - i2v
+        biometricConsent:
+          type: boolean
         seed:
           type: integer
           minimum: 0
+        loras:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              strength:
+                type: number
+                minimum: 0
+                maximum: 2
+            required:
+              - id
+          maxItems: 2
       required:
         - prompt
     FaceSwapRequest:

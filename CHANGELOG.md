@@ -3,6 +3,21 @@
 All notable changes to `@nocensor/sdk` are documented in this file.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## [0.2.0] — 2026-04-25
+
+### Added
+
+- `width`, `height` (64–1280 px) and `characterId` (character LoRA unlock) params for `generate.create`
+- `duration` enum preset (`'short'|'medium'|'long'|'long+'`), `resolution` (`'standard'|'hd'`), and `biometricConsent` for `video.create`
+- `pipeline.completed` event type to `WebhookEvent` discriminated union, `KNOWN_EVENT_TYPES`, and `WebhookEventType`
+- `PipelineCompletedPayload` webhook payload type
+- Missing resource type exports: `Character`, `Credits`, `Payment`, `PaymentListParams`, `Webhook`, `WebhookWithSecret`, `WebhookDelivery`, `CreateWebhookParams`, `UpdateWebhookParams`, `ListDeliveriesParams`, `WebhookEventType`
+
+### Fixed
+
+- `VideoCreateParams` previously exposed `durationSeconds` (unmapped field) — all calls silently had no effect; replaced with correct `duration` enum and `resolution` preset params
+- `openapi.yaml`: corrected `VideoRequest.duration` enum value `long-plus` → `long+`; added `model`, `resolution`, `mode`, `biometricConsent`, `loras` to `VideoRequest`; added `width`, `height`, `characterId` to `GenerateRequest`; updated `Credits` schema to actual response shape (`balance`, `lifetime_purchased`, `lifetime_consumed`)
+
 ## [0.1.0] — 2026-04-15
 
 ### Added

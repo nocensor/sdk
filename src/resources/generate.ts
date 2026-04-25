@@ -18,7 +18,13 @@ export interface GenerateCreateParams {
   seed?: number
   image?: ImageInput
   denoise?: number
+  /** Output width in pixels (64–1280). */
+  width?: number
+  /** Output height in pixels (64–1280). */
+  height?: number
   loras?: LoraRef[]
+  /** UUID of an unlocked character LoRA to inject. */
+  characterId?: string
   idempotencyKey?: string
   signal?: AbortSignal
 }
@@ -38,7 +44,10 @@ interface GenerateRequestWire {
   seed?: number
   image?: string
   denoise?: number
+  width?: number
+  height?: number
   loras?: LoraRef[]
+  characterId?: string
 }
 
 async function toWireGenerate(p: GenerateCreateParams): Promise<GenerateRequestWire> {
@@ -48,7 +57,10 @@ async function toWireGenerate(p: GenerateCreateParams): Promise<GenerateRequestW
   if (p.seed !== undefined) wire.seed = p.seed
   if (p.image !== undefined) wire.image = await toDataUri(p.image)
   if (p.denoise !== undefined) wire.denoise = p.denoise
+  if (p.width !== undefined) wire.width = p.width
+  if (p.height !== undefined) wire.height = p.height
   if (p.loras !== undefined) wire.loras = p.loras
+  if (p.characterId !== undefined) wire.characterId = p.characterId
   return wire
 }
 

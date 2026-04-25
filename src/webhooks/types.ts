@@ -36,6 +36,14 @@ export interface WebhookTestPayload {
   message: string
   emittedAt: string
 }
+export interface PipelineCompletedPayload {
+  pipelineId: string
+  stages: Array<{
+    op: string
+    jobId: string | null
+    status: 'completed' | 'failed'
+  }>
+}
 export interface WebhookEventMeta {
   id: string
   deliveredAt: Date
@@ -51,9 +59,10 @@ export type WebhookEvent =
   | ({ type: 'lora.training_completed'; data: LoraTrainingCompletedPayload } & WebhookEventMeta)
   | ({ type: 'lora.training_failed'; data: LoraTrainingFailedPayload } & WebhookEventMeta)
   | ({ type: 'webhook.test'; data: WebhookTestPayload } & WebhookEventMeta)
+  | ({ type: 'pipeline.completed'; data: PipelineCompletedPayload } & WebhookEventMeta)
   | ({ type: string; data: Record<string, unknown>; unknown: true } & WebhookEventMeta)
 
-export const KNOWN_EVENT_TYPES = new Set([
+export const KNOWN_EVENT_TYPES: ReadonlySet<string> = new Set([
   'job.completed',
   'job.failed',
   'job.cancelled',
@@ -61,4 +70,5 @@ export const KNOWN_EVENT_TYPES = new Set([
   'lora.training_completed',
   'lora.training_failed',
   'webhook.test',
+  'pipeline.completed',
 ])

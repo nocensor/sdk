@@ -10,7 +10,8 @@ export type WebhookEventType = LiteralUnion<
   | 'payment.completed'
   | 'lora.training_completed'
   | 'lora.training_failed'
-  | 'webhook.test',
+  | 'webhook.test'
+  | 'pipeline.completed',
   string
 >
 

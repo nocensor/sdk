@@ -20,9 +20,13 @@ import { VideoResource } from './resources/video'
 import { UndressResource } from './resources/undress'
 import { EnhanceResource } from './resources/enhance'
 import { PipelinesResource } from './resources/pipelines'
+import { WebhooksResource } from './resources/webhooks'
+import { CharactersResource } from './resources/characters'
+import { CreditsResource } from './resources/credits'
+import { PaymentsResource } from './resources/payments'
 
 // Update this on every release to match package.json version.
-const SDK_VERSION = '0.1.0'
+const SDK_VERSION = '0.2.0'
 
 export interface NoCensorOptions {
   apiKey?: string
@@ -48,6 +52,10 @@ export class NoCensor {
   readonly undress: UndressResource
   readonly enhance: EnhanceResource
   readonly pipelines: PipelinesResource
+  readonly webhooks: WebhooksResource
+  readonly characters: CharactersResource
+  readonly credits: CreditsResource
+  readonly payments: PaymentsResource
 
   constructor(options: NoCensorOptions = {}) {
     const apiKey = resolveApiKey(options.apiKey)
@@ -92,6 +100,10 @@ export class NoCensor {
     this.undress = new UndressResource(this.#request.bind(this))
     this.enhance = new EnhanceResource(this.#request.bind(this))
     this.pipelines = new PipelinesResource(this.#request.bind(this))
+    this.webhooks = new WebhooksResource(this.#request.bind(this))
+    this.characters = new CharactersResource(this.#request.bind(this))
+    this.credits = new CreditsResource(this.#request.bind(this))
+    this.payments = new PaymentsResource(this.#request.bind(this), requestWithMeta)
   }
 
   /** Low-level request escape hatch for endpoints not yet wrapped by a resource. */

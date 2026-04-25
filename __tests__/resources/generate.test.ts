@@ -46,6 +46,26 @@ describe('GenerateResource.create', () => {
     expect(m.calls[0]?.method).toBe('POST')
   })
 
+  it('forwards width, height, and characterId to wire body', async () => {
+    const m = createMockFetch()
+    m.queue({
+      status: 202,
+      body: {
+        data: { id: 'j2', status: 'pending', created_at: '2026-04-08T12:00:00Z', credits_charged: 15, outputs: null, error: null },
+      },
+    })
+    await nc(m).generate.create({
+      prompt: 'portrait',
+      width: 768,
+      height: 1024,
+      characterId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+    })
+    const body = JSON.parse(m.calls[0]?.body ?? '{}')
+    expect(body.width).toBe(768)
+    expect(body.height).toBe(1024)
+    expect(body.characterId).toBe('aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee')
+  })
+
   it('sends seed: 0 (not stripped as falsy)', async () => {
     const m = createMockFetch()
     m.queue({

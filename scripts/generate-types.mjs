@@ -9,12 +9,19 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import openapiTS, { astToString } from 'openapi-typescript'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const yamlPath = resolve(here, '../../../apps/web/public/openapi.yaml')
 const outPath = resolve(here, '../src/generated/openapi-types.ts')
 
+// Detect monorepo vs standalone clone
+const monorepoPath = resolve(here, '../../../apps/web/public/openapi.yaml')
+const localPath = resolve(here, '../openapi.yaml')
+const yamlPath = existsSync(monorepoPath) ? monorepoPath : localPath
+
 if (!existsSync(yamlPath)) {
-  console.error(`✗ OpenAPI spec not found at ${yamlPath}`)
-  console.error('  Run apps/web build first to regenerate it.')
+  console.error(`✗ OpenAPI spec not found.`)
+  console.error(`  Looked for: ${monorepoPath}`)
+  console.error(`             ${localPath}`)
+  console.error('  In monorepo: run apps/web build first.')
+  console.error('  Standalone clone: openapi.yaml should be in packages/sdk/')
   process.exit(1)
 }
 

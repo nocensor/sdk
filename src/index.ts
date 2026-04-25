@@ -70,6 +70,21 @@ export {
   type PipelineCostStage,
 } from './resources/pipelines'
 
+export { CharactersResource, type Character } from './resources/characters'
+export { CreditsResource, type Credits } from './resources/credits'
+export { PaymentsResource, type Payment, type PaymentListParams } from './resources/payments'
+export {
+  WebhooksResource,
+  KNOWN_EVENT_TYPES,
+  type Webhook,
+  type WebhookWithSecret,
+  type WebhookDelivery,
+  type CreateWebhookParams,
+  type UpdateWebhookParams,
+  type ListDeliveriesParams,
+  type WebhookEventType,
+} from './resources/webhooks'
+
 // Webhook verification (also available as @nocensor/sdk/webhooks)
 export { verifyWebhook, type VerifyOptions } from './webhooks/verify'
 export type {
@@ -82,4 +97,5 @@ export type {
   LoraTrainingCompletedPayload,
   LoraTrainingFailedPayload,
   WebhookTestPayload,
+  PipelineCompletedPayload,
 } from './webhooks/types'
