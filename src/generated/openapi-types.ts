@@ -509,6 +509,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/pose-extract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Extract pose keypoints from a source image (admin-only). */
+        post: operations["extractPose"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/undress-v2": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Second-generation undress pipeline (admin + premium gated). */
+        post: operations["undressV2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/enhance": {
         parameters: {
             query?: never;
@@ -2734,7 +2768,9 @@ export interface components {
             error: components["schemas"]["ErrorObject"];
         };
         Credits: {
-            credits_remaining: number;
+            balance: number;
+            lifetime_purchased: number;
+            lifetime_consumed: number;
         };
         CreditsResponse: {
             data: components["schemas"]["Credits"];
@@ -2781,14 +2817,56 @@ export interface components {
                     strength?: number;
                 }
             ];
+            width?: number;
+            height?: number;
+            /** Format: uuid */
+            characterId?: string;
         };
         VideoRequest: {
             prompt: string;
             negativePrompt?: string;
+            /** @enum {string} */
+            model?: "wan-remix" | "phr00t-v10" | "wan-21";
             image?: string;
             /** @enum {string} */
-            duration?: "short" | "medium" | "long" | "long-plus";
+            duration?: "short" | "medium" | "long" | "long+";
+            /** @enum {string} */
+            resolution?: "standard" | "hd";
+            /**
+             * @description Optional explicit mode. Defaults to `t2v`.
+             * @enum {string}
+             */
+            mode?: "t2v" | "i2v";
+            biometricConsent?: boolean;
+            /** @description AR-preserving width override for i2v. Multiple of 16. */
+            width?: number;
+            /** @description AR-preserving height override for i2v. Multiple of 16. */
+            height?: number;
+            /** @description I2V noise-augmentation strength, 0-10. */
+            noiseAugStrength?: number;
+            audioMode?: components["schemas"]["VideoAudioMode"];
+            /** @description Free-text steer for the audio module. */
+            audioPrompt?: string;
             seed?: number;
+            loras?: [
+            ] | [
+                {
+                    /** Format: uuid */
+                    id: string;
+                    strength?: number;
+                }
+            ] | [
+                {
+                    /** Format: uuid */
+                    id: string;
+                    strength?: number;
+                },
+                {
+                    /** Format: uuid */
+                    id: string;
+                    strength?: number;
+                }
+            ];
         };
         FaceSwapRequest: {
             source: string;
@@ -2883,6 +2961,29 @@ export interface components {
             };
             meta: components["schemas"]["Meta"];
         };
+        PoseExtractRequest: {
+            /** @description Source image — `https://...` URL or `data:image/...;base64,...` URI. */
+            source: string;
+        };
+        UndressV2Request: {
+            /** @description Source image (`https://`, `data:`, or `job_<uuid>`). */
+            source: string;
+            /**
+             * @description Must be literal `true`.
+             * @enum {boolean}
+             */
+            biometric_consent: true;
+        };
+        /**
+         * @description Audio post-processing mode.
+         *     - `none` (default) — silent video.
+         *     - `sfx` — diegetic sound effects matched to motion.
+         *     - `music` — music track from `audioPrompt`.
+         *     - `voice` — voiced narration from `audioPrompt`.
+         *
+         * @enum {string}
+         */
+        VideoAudioMode: "none" | "sfx" | "music" | "voice";
     };
     responses: never;
     parameters: never;
@@ -2891,4 +2992,90 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    extractPose: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PoseExtractRequest"];
+            };
+        };
+        responses: {
+            /** @description Pose extraction job accepted. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAcceptedResponse"];
+                };
+            };
+            /** @description API key is not admin. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Source image exceeds payload limit. */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation error. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    undressV2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UndressV2Request"];
+            };
+        };
+        responses: {
+            /** @description Undress-v2 job accepted. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAcceptedResponse"];
+                };
+            };
+            /** @description Caller has no prior real purchase. */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Feature is admin-gated and unavailable to this key. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+}

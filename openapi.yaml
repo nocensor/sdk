@@ -497,6 +497,10 @@ components:
           maxLength: 2000
         model:
           type: string
+          enum:
+            - wan-remix
+            - phr00t-v10
+            - wan-21
         image:
           type: string
         duration:
@@ -516,8 +520,30 @@ components:
           enum:
             - t2v
             - i2v
+          description: Optional explicit mode. Defaults to `t2v`.
         biometricConsent:
           type: boolean
+        width:
+          type: integer
+          minimum: 256
+          maximum: 1280
+          description: AR-preserving width override for i2v. Multiple of 16.
+        height:
+          type: integer
+          minimum: 256
+          maximum: 1280
+          description: AR-preserving height override for i2v. Multiple of 16.
+        noiseAugStrength:
+          type: number
+          minimum: 0
+          maximum: 10
+          description: I2V noise-augmentation strength, 0-10.
+        audioMode:
+          $ref: '#/components/schemas/VideoAudioMode'
+        audioPrompt:
+          type: string
+          maxLength: 500
+          description: Free-text steer for the audio module.
         seed:
           type: integer
           minimum: 0
@@ -781,6 +807,41 @@ components:
       required:
         - data
         - meta
+    PoseExtractRequest:
+      type: object
+      required:
+        - source
+      properties:
+        source:
+          type: string
+          description: Source image — `https://...` URL or `data:image/...;base64,...` URI.
+    UndressV2Request:
+      type: object
+      required:
+        - source
+        - biometric_consent
+      properties:
+        source:
+          type: string
+          description: Source image (`https://`, `data:`, or `job_<uuid>`).
+        biometric_consent:
+          type: boolean
+          enum:
+            - true
+          description: Must be literal `true`.
+    VideoAudioMode:
+      type: string
+      enum:
+        - none
+        - sfx
+        - music
+        - voice
+      description: |
+        Audio post-processing mode.
+        - `none` (default) — silent video.
+        - `sfx` — diegetic sound effects matched to motion.
+        - `music` — music track from `audioPrompt`.
+        - `voice` — voiced narration from `audioPrompt`.
   parameters: {}
 paths:
   /api/v1/health:
@@ -1061,6 +1122,62 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/pose-extract:
+    post:
+      summary: Extract pose keypoints from a source image (admin-only).
+      operationId: extractPose
+      tags:
+        - generation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PoseExtractRequest'
+      responses:
+        '202':
+          description: Pose extraction job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAcceptedResponse'
+        '403':
+          description: API key is not admin.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Source image exceeds payload limit.
+        '422':
+          description: Validation error.
+  /api/v1/undress-v2:
+    post:
+      summary: Second-generation undress pipeline (admin + premium gated).
+      operationId: undressV2
+      tags:
+        - generation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UndressV2Request'
+      responses:
+        '202':
+          description: Undress-v2 job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAcceptedResponse'
+        '402':
+          description: Caller has no prior real purchase.
+        '503':
+          description: Feature is admin-gated and unavailable to this key.
   /api/v1/enhance:
     post:
       tags:

@@ -88,4 +88,94 @@ describe('PipelinesResource', () => {
     expect(result.status).toBe('processing')
     expect(result.stages[1]?.status).toBe('processing')
   })
+
+  it('emits undress-v2 stage with biometric_consent', async () => {
+    const m = createMockFetch()
+    m.queue({
+      status: 202,
+      body: {
+        data: { id: 'pipeline_x', status: 'pending', stages: [{ op: 'undress-v2', job_id: null, status: 'pending', stage_index: 0 }] },
+      },
+    })
+    await nc(m).pipelines.create({
+      stages: [{ op: 'undress-v2', biometricConsent: true }],
+      source: 'https://example.com/src.png',
+    })
+    const body = JSON.parse(m.calls[0]?.body ?? '{}')
+    expect(body.stages[0]).toEqual({ op: 'undress-v2', biometric_consent: true })
+  })
+
+  it('emits undress-v3 stage with biometric_consent', async () => {
+    const m = createMockFetch()
+    m.queue({
+      status: 202,
+      body: {
+        data: { id: 'pipeline_x', status: 'pending', stages: [{ op: 'undress-v3', job_id: null, status: 'pending', stage_index: 0 }] },
+      },
+    })
+    await nc(m).pipelines.create({
+      stages: [{ op: 'undress-v3', biometricConsent: true }],
+      source: 'https://example.com/src.png',
+    })
+    const body = JSON.parse(m.calls[0]?.body ?? '{}')
+    expect(body.stages[0]).toEqual({ op: 'undress-v3', biometric_consent: true })
+  })
+
+  it('emits attach-object-v2 with object_prompt + mask', async () => {
+    const m = createMockFetch()
+    m.queue({
+      status: 202,
+      body: {
+        data: { id: 'pipeline_x', status: 'pending', stages: [{ op: 'attach-object-v2', job_id: null, status: 'pending', stage_index: 0 }] },
+      },
+    })
+    await nc(m).pipelines.create({
+      stages: [{ op: 'attach-object-v2', objectPrompt: 'a hat', mask: 'data:image/png;base64,AAAA' }],
+      source: 'https://example.com/src.png',
+    })
+    const body = JSON.parse(m.calls[0]?.body ?? '{}')
+    expect(body.stages[0]).toEqual({ op: 'attach-object-v2', object_prompt: 'a hat', mask: 'data:image/png;base64,AAAA' })
+  })
+
+  it('emits redress-v2 with biometric_consent + clothing_prompt', async () => {
+    const m = createMockFetch()
+    m.queue({
+      status: 202,
+      body: { data: { id: 'pipeline_x', status: 'pending', stages: [{ op: 'redress-v2', job_id: null, status: 'pending', stage_index: 0 }] } },
+    })
+    await nc(m).pipelines.create({
+      stages: [{ op: 'redress-v2', biometricConsent: true, clothingPrompt: 'red dress' }],
+      source: 'https://example.com/src.png',
+    })
+    const body = JSON.parse(m.calls[0]?.body ?? '{}')
+    expect(body.stages[0]).toEqual({ op: 'redress-v2', biometric_consent: true, clothing_prompt: 'red dress' })
+  })
+
+  it('emits redress-vton with biometric_consent + garment data URI', async () => {
+    const m = createMockFetch()
+    m.queue({
+      status: 202,
+      body: { data: { id: 'pipeline_x', status: 'pending', stages: [{ op: 'redress-vton', job_id: null, status: 'pending', stage_index: 0 }] } },
+    })
+    await nc(m).pipelines.create({
+      stages: [{ op: 'redress-vton', biometricConsent: true, garment: 'data:image/png;base64,BBBB' }],
+      source: 'https://example.com/src.png',
+    })
+    const body = JSON.parse(m.calls[0]?.body ?? '{}')
+    expect(body.stages[0]).toEqual({ op: 'redress-vton', biometric_consent: true, garment: 'data:image/png;base64,BBBB' })
+  })
+
+  it('emits fix-hand stage with op only', async () => {
+    const m = createMockFetch()
+    m.queue({
+      status: 202,
+      body: { data: { id: 'pipeline_x', status: 'pending', stages: [{ op: 'fix-hand', job_id: null, status: 'pending', stage_index: 0 }] } },
+    })
+    await nc(m).pipelines.create({
+      stages: [{ op: 'fix-hand' }],
+      source: 'https://example.com/src.png',
+    })
+    const body = JSON.parse(m.calls[0]?.body ?? '{}')
+    expect(body.stages[0]).toEqual({ op: 'fix-hand' })
+  })
 })

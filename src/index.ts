@@ -54,8 +54,14 @@ export {
   type VideoCreateParams,
   type VideoCreateAndWaitParams,
   type VideoLoraRef,
+  type VideoAudioMode,
 } from './resources/video'
 export { UndressResource, type UndressCreateParams, type UndressCreateAndWaitParams } from './resources/undress'
+export {
+  UndressV2Resource,
+  type UndressV2CreateParams,
+  type UndressV2CreateAndWaitParams,
+} from './resources/undress-v2'
 export { EnhanceResource, type EnhanceCreateParams, type EnhanceCreateAndWaitParams } from './resources/enhance'
 export {
   PipelinesResource,
@@ -84,6 +90,12 @@ export {
   type ListDeliveriesParams,
   type WebhookEventType,
 } from './resources/webhooks'
+
+export {
+  PoseExtractResource,
+  type PoseExtractCreateParams,
+  type PoseExtractCreateAndWaitParams,
+} from './resources/pose-extract'
 
 // Webhook verification (also available as @nocensor/sdk/webhooks)
 export { verifyWebhook, type VerifyOptions } from './webhooks/verify'

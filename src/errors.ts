@@ -249,6 +249,6 @@ export function mapErrorCodeToClass(code: string, _status: number): typeof NoCen
     case 'GPU_UNAVAILABLE':
       return NoCensorServerError
     default:
-      return NoCensorError
+      return _status >= 500 ? NoCensorServerError : NoCensorError
   }
 }

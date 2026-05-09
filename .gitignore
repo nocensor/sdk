@@ -4,3 +4,4 @@ coverage/
 .turbo/
 *.tsbuildinfo
 .release-notes.md
+openapi-rapidapi.yaml

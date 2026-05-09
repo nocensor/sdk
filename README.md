@@ -83,6 +83,59 @@ const job = await nc.generate.createAndWait({
 
 In the browser, pass a `File` or `Blob` directly — no Node helper needed.
 
+## Generating videos with audio
+
+```typescript
+const job = await nc.video.createAndWait({
+  prompt: 'a fox running through a forest',
+  duration: 'medium',
+  audioMode: 'music',
+  audioPrompt: 'lo-fi acoustic, fingerpicked guitar',
+})
+console.log(job.outputs[0].url)
+```
+
+`audioMode` accepts `'none'` (default), `'sfx'`, `'music'`, or `'voice'`. When non-`'none'`, supply `audioPrompt` to steer the generated track (max 500 chars).
+
+For image-to-video with explicit dimensions and noise tuning:
+
+```typescript
+import { fromFilePath } from '@nocensor/sdk/node'
+
+const image = await fromFilePath('./portrait.png')
+const job = await nc.video.createAndWait({
+  prompt: 'gentle camera push-in',
+  mode: 'i2v',
+  image,
+  biometricConsent: true,
+  width: 720,
+  height: 1280,
+  noiseAugStrength: 0.65,
+})
+```
+
+`width` and `height` must be multiples of 16, in range 256-1280. `noiseAugStrength` ranges 0-10 — higher values deviate more from the source frame.
+
+## Pose extraction (admin-only)
+
+```typescript
+const job = await nc.poseExtract.createAndWait({ source: 'https://example.com/pose.png' })
+console.log(job.outputs[0].url) // pose keypoint visualization
+```
+
+Costs 0 credits. Non-admin API keys receive `403 FORBIDDEN`.
+
+## Undress v2 (admin + premium)
+
+```typescript
+const job = await nc.undressV2.createAndWait({
+  source: 'https://example.com/portrait.png',
+  biometricConsent: true,
+})
+```
+
+Admin + paid-tier gated. Non-admin keys receive `503 FEATURE_UNAVAILABLE`; admin keys without prior purchase receive `402 PURCHASE_REQUIRED`.
+
 ## Face swapping
 
 ```typescript

@@ -18,15 +18,17 @@ import { GenerateResource } from './resources/generate'
 import { FaceSwapResource } from './resources/face-swap'
 import { VideoResource } from './resources/video'
 import { UndressResource } from './resources/undress'
+import { UndressV2Resource } from './resources/undress-v2'
 import { EnhanceResource } from './resources/enhance'
 import { PipelinesResource } from './resources/pipelines'
 import { WebhooksResource } from './resources/webhooks'
 import { CharactersResource } from './resources/characters'
 import { CreditsResource } from './resources/credits'
 import { PaymentsResource } from './resources/payments'
+import { PoseExtractResource } from './resources/pose-extract'
 
 // Update this on every release to match package.json version.
-const SDK_VERSION = '0.3.0'
+const SDK_VERSION = '0.4.0'
 
 export interface NoCensorOptions {
   apiKey?: string
@@ -50,12 +52,14 @@ export class NoCensor {
   readonly faceSwap: FaceSwapResource
   readonly video: VideoResource
   readonly undress: UndressResource
+  readonly undressV2: UndressV2Resource
   readonly enhance: EnhanceResource
   readonly pipelines: PipelinesResource
   readonly webhooks: WebhooksResource
   readonly characters: CharactersResource
   readonly credits: CreditsResource
   readonly payments: PaymentsResource
+  readonly poseExtract: PoseExtractResource
 
   constructor(options: NoCensorOptions = {}) {
     const apiKey = resolveApiKey(options.apiKey)
@@ -98,12 +102,14 @@ export class NoCensor {
     this.faceSwap = new FaceSwapResource(this.#request.bind(this))
     this.video = new VideoResource(this.#request.bind(this))
     this.undress = new UndressResource(this.#request.bind(this))
+    this.undressV2 = new UndressV2Resource(this.#request.bind(this))
     this.enhance = new EnhanceResource(this.#request.bind(this))
     this.pipelines = new PipelinesResource(this.#request.bind(this))
     this.webhooks = new WebhooksResource(this.#request.bind(this))
     this.characters = new CharactersResource(this.#request.bind(this))
     this.credits = new CreditsResource(this.#request.bind(this))
     this.payments = new PaymentsResource(this.#request.bind(this), requestWithMeta)
+    this.poseExtract = new PoseExtractResource(this.#request.bind(this))
   }
 
   /** Low-level request escape hatch for endpoints not yet wrapped by a resource. */

@@ -135,8 +135,13 @@ describe('mapErrorCodeToClass', () => {
     expect(mapErrorCodeToClass('GPU_UNAVAILABLE', 503)).toBe(NoCensorServerError)
   })
 
-  it('falls through to base NoCensorError for unknown codes', () => {
+  it('falls through to base NoCensorError for unknown 4xx codes', () => {
     expect(mapErrorCodeToClass('NEW_FUTURE_CODE', 400)).toBe(NoCensorError)
+  })
+
+  it('falls through to NoCensorServerError for unknown 5xx codes', () => {
+    expect(mapErrorCodeToClass('NEW_FUTURE_CODE', 500)).toBe(NoCensorServerError)
+    expect(mapErrorCodeToClass('FEATURE_UNAVAILABLE', 503)).toBe(NoCensorServerError)
   })
 })
 

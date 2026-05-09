@@ -7,13 +7,19 @@ import { sleepAbortable } from '../polling'
 export type PipelineStageOp =
   | 'generate'
   | 'undress'
+  | 'undress-v2'
+  | 'undress-v3'
   | 'face-swap'
   | 'upscale'
   | 'face-restore'
+  | 'fix-hand'
   | 'bg-replace'
   | 'attach-object'
+  | 'attach-object-v2'
   | 'animate'
   | 'redress'
+  | 'redress-v2'
+  | 'redress-vton'
 
 export type PipelineStage =
   | {
@@ -27,13 +33,19 @@ export type PipelineStage =
       loras?: Array<{ id: string; strength?: number }>
     }
   | { op: 'undress'; biometricConsent: true }
+  | { op: 'undress-v2'; biometricConsent: true }
+  | { op: 'undress-v3'; biometricConsent: true }
   | { op: 'face-swap'; biometricConsent: true; faceModelId?: string; face?: ImageInput }
   | { op: 'upscale'; scale?: 2 | 3 | 4 }
   | { op: 'face-restore' }
+  | { op: 'fix-hand'; strength?: number }
   | { op: 'bg-replace'; backgroundPrompt: string }
   | { op: 'attach-object'; objectPrompt: string; mask: ImageInput }
+  | { op: 'attach-object-v2'; objectPrompt: string; mask: ImageInput; prompt?: string; seed?: number }
   | { op: 'animate'; motionPrompt: string; frames?: number }
   | { op: 'redress'; clothingPrompt: string; biometricConsent: true }
+  | { op: 'redress-v2'; clothingPrompt: string; biometricConsent: true }
+  | { op: 'redress-vton'; garment: ImageInput; biometricConsent: true }
 
 export interface PipelineCreateParams {
   stages: PipelineStage[]
@@ -145,6 +157,32 @@ async function toWireStage(s: PipelineStage): Promise<Record<string, unknown>> {
     case 'redress':
       base['clothing_prompt'] = s.clothingPrompt
       base['biometric_consent'] = true
+      return base
+    case 'undress-v2':
+      base['biometric_consent'] = true
+      return base
+    case 'undress-v3':
+      base['biometric_consent'] = true
+      return base
+    case 'fix-hand':
+      if (s.strength !== undefined) base['strength'] = s.strength
+      return base
+    case 'attach-object-v2':
+      base['object_prompt'] = s.objectPrompt
+      base['mask'] = await toDataUri(s.mask)
+      if (s.prompt !== undefined) base['prompt'] = s.prompt
+      if (s.seed !== undefined) base['seed'] = s.seed
+      return base
+    case 'redress-v2':
+      base['clothing_prompt'] = s.clothingPrompt
+      base['biometric_consent'] = true
+      return base
+    case 'redress-vton':
+      base['garment'] = await toDataUri(s.garment)
+      base['biometric_consent'] = true
+      return base
+    default:
+      s satisfies never
       return base
   }
 }
